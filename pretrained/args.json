@@ -1,0 +1,72 @@
+{
+    "N": 100,
+    "action_weight": 5,
+    "add_extras": {
+        "_string": "<bound method Parser.add_extras of Parser(prog='plan.py', usage=None, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)>",
+        "_type": "python_object (type = method)",
+        "_value": "gASVWAMAAAAAAACMCGJ1aWx0aW5zlIwHZ2V0YXR0cpSTlIwNc2NyaXB0cy50cmFpbpSMBlBhcnNlcpSTlCmBlH2UKIwIZXhwX25hbWWUjA5ncHQvcHJldHJhaW5lZJSMB25fbGF5ZXKUSwSMCXNhdmVfZGlmZpRoAmgGaAuGlFKUjAVta2RpcpRoAmgGaA6GlFKUjAFOlEtkjApiYXRjaF9zaXpllE0AAYwNbGVhcm5pbmdfcmF0ZZRHP0OpKjBVMmGMCGxyX2RlY2F5lIiMB2xvZ2Jhc2WUjAsvaG9tZS9sb2dzL5SMC2Rpc2NyZXRpemVylIwTUXVhbnRpbGVEaXNjcmV0aXplcpSMCmdldF9jb21taXSUaAJoBmgZhpRSlIwGZGV2aWNllIwEY3VkYZSMGnN1YnNhbXBsZWRfc2VxdWVuY2VfbGVuZ3RolEsKjBN0ZXJtaW5hdGlvbl9wZW5hbHR5lEqc////jAphZGRfZXh0cmFzlGgCaAZoIIaUUpSMBHN0ZXCUSwGMCHNhdmVwYXRolIwzL2hvbWUvbG9ncy93YWxrZXIyZC1tZWRpdW0tZXhwZXJ0LXYyL2dwdC9wcmV0cmFpbmVklIwRZ2VuZXJhdGVfZXhwX25hbWWUaAJoBmgmhpRSlIwIc2V0X3NlZWSUaAJoBmgphpRSlIwMbl9lcG9jaHNfcmVmlEsyjAtyZWFkX2NvbmZpZ5RoAmgGaC2GlFKUjAZjb25maWeUjA5jb25maWcub2ZmbGluZZSMDWFjdGlvbl93ZWlnaHSUSwWMBmNvbW1pdJSMLzg4MzRhNmVkMDRjZWVhYjhmZGI5NDY1ZTE0NWM2ZTA0MWMwNWQ3MWIgbWFzdGVylIwMdmFsdWVfd2VpZ2h0lEsBjAhkaXNjb3VudJRHP++uFHrhR66MBm5fZW1iZJRLIIwGbl9oZWFklEsEjARzZWVklEsqjAphdHRuX3Bkcm9wlEc/uZmZmZmZmowNcmV3YXJkX3dlaWdodJRLAYwHZGF0YXNldJSMGXdhbGtlcjJkLW1lZGl1bS1leHBlcnQtdjKUjAtyZXNpZF9wZHJvcJRHP7mZmZmZmZqMCmVtYmRfcGRyb3CURz+5mZmZmZmajAduX3NhdmVzlEsDdWJoIIaUUpQu"
+    },
+    "attn_pdrop": 0.1,
+    "batch_size": 256,
+    "commit": "8834a6ed04ceeab8fdb9465e145c6e041c05d71b master",
+    "config": "config.offline",
+    "dataset": "walker2d-medium-expert-v2",
+    "device": "cuda",
+    "discount": 0.99,
+    "discretizer": "QuantileDiscretizer",
+    "embd_pdrop": 0.1,
+    "exp_name": "gpt/pretrained",
+    "generate_exp_name": {
+        "_string": "<bound method Parser.generate_exp_name of Parser(prog='plan.py', usage=None, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)>",
+        "_type": "python_object (type = method)",
+        "_value": "gASVWAMAAAAAAACMCGJ1aWx0aW5zlIwHZ2V0YXR0cpSTlIwNc2NyaXB0cy50cmFpbpSMBlBhcnNlcpSTlCmBlH2UKIwIZXhwX25hbWWUjA5ncHQvcHJldHJhaW5lZJSMB25fbGF5ZXKUSwSMCXNhdmVfZGlmZpRoAmgGaAuGlFKUjAVta2RpcpRoAmgGaA6GlFKUjAFOlEtkjApiYXRjaF9zaXpllE0AAYwNbGVhcm5pbmdfcmF0ZZRHP0OpKjBVMmGMCGxyX2RlY2F5lIiMB2xvZ2Jhc2WUjAsvaG9tZS9sb2dzL5SMC2Rpc2NyZXRpemVylIwTUXVhbnRpbGVEaXNjcmV0aXplcpSMCmdldF9jb21taXSUaAJoBmgZhpRSlIwGZGV2aWNllIwEY3VkYZSMGnN1YnNhbXBsZWRfc2VxdWVuY2VfbGVuZ3RolEsKjBN0ZXJtaW5hdGlvbl9wZW5hbHR5lEqc////jAphZGRfZXh0cmFzlGgCaAZoIIaUUpSMBHN0ZXCUSwGMCHNhdmVwYXRolIwzL2hvbWUvbG9ncy93YWxrZXIyZC1tZWRpdW0tZXhwZXJ0LXYyL2dwdC9wcmV0cmFpbmVklIwRZ2VuZXJhdGVfZXhwX25hbWWUaAJoBmgmhpRSlIwIc2V0X3NlZWSUaAJoBmgphpRSlIwMbl9lcG9jaHNfcmVmlEsyjAtyZWFkX2NvbmZpZ5RoAmgGaC2GlFKUjAZjb25maWeUjA5jb25maWcub2ZmbGluZZSMDWFjdGlvbl93ZWlnaHSUSwWMBmNvbW1pdJSMLzg4MzRhNmVkMDRjZWVhYjhmZGI5NDY1ZTE0NWM2ZTA0MWMwNWQ3MWIgbWFzdGVylIwMdmFsdWVfd2VpZ2h0lEsBjAhkaXNjb3VudJRHP++uFHrhR66MBm5fZW1iZJRLIIwGbl9oZWFklEsEjARzZWVklEsqjAphdHRuX3Bkcm9wlEc/uZmZmZmZmowNcmV3YXJkX3dlaWdodJRLAYwHZGF0YXNldJSMGXdhbGtlcjJkLW1lZGl1bS1leHBlcnQtdjKUjAtyZXNpZF9wZHJvcJRHP7mZmZmZmZqMCmVtYmRfcGRyb3CURz+5mZmZmZmajAduX3NhdmVzlEsDdWJoJoaUUpQu"
+    },
+    "get_commit": {
+        "_string": "<bound method Parser.get_commit of Parser(prog='plan.py', usage=None, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)>",
+        "_type": "python_object (type = method)",
+        "_value": "gASVWAMAAAAAAACMCGJ1aWx0aW5zlIwHZ2V0YXR0cpSTlIwNc2NyaXB0cy50cmFpbpSMBlBhcnNlcpSTlCmBlH2UKIwIZXhwX25hbWWUjA5ncHQvcHJldHJhaW5lZJSMB25fbGF5ZXKUSwSMCXNhdmVfZGlmZpRoAmgGaAuGlFKUjAVta2RpcpRoAmgGaA6GlFKUjAFOlEtkjApiYXRjaF9zaXpllE0AAYwNbGVhcm5pbmdfcmF0ZZRHP0OpKjBVMmGMCGxyX2RlY2F5lIiMB2xvZ2Jhc2WUjAsvaG9tZS9sb2dzL5SMC2Rpc2NyZXRpemVylIwTUXVhbnRpbGVEaXNjcmV0aXplcpSMCmdldF9jb21taXSUaAJoBmgZhpRSlIwGZGV2aWNllIwEY3VkYZSMGnN1YnNhbXBsZWRfc2VxdWVuY2VfbGVuZ3RolEsKjBN0ZXJtaW5hdGlvbl9wZW5hbHR5lEqc////jAphZGRfZXh0cmFzlGgCaAZoIIaUUpSMBHN0ZXCUSwGMCHNhdmVwYXRolIwzL2hvbWUvbG9ncy93YWxrZXIyZC1tZWRpdW0tZXhwZXJ0LXYyL2dwdC9wcmV0cmFpbmVklIwRZ2VuZXJhdGVfZXhwX25hbWWUaAJoBmgmhpRSlIwIc2V0X3NlZWSUaAJoBmgphpRSlIwMbl9lcG9jaHNfcmVmlEsyjAtyZWFkX2NvbmZpZ5RoAmgGaC2GlFKUjAZjb25maWeUjA5jb25maWcub2ZmbGluZZSMDWFjdGlvbl93ZWlnaHSUSwWMBmNvbW1pdJSMLzg4MzRhNmVkMDRjZWVhYjhmZGI5NDY1ZTE0NWM2ZTA0MWMwNWQ3MWIgbWFzdGVylIwMdmFsdWVfd2VpZ2h0lEsBjAhkaXNjb3VudJRHP++uFHrhR66MBm5fZW1iZJRLIIwGbl9oZWFklEsEjARzZWVklEsqjAphdHRuX3Bkcm9wlEc/uZmZmZmZmowNcmV3YXJkX3dlaWdodJRLAYwHZGF0YXNldJSMGXdhbGtlcjJkLW1lZGl1bS1leHBlcnQtdjKUjAtyZXNpZF9wZHJvcJRHP7mZmZmZmZqMCmVtYmRfcGRyb3CURz+5mZmZmZmajAduX3NhdmVzlEsDdWJoGYaUUpQu"
+    },
+    "learning_rate": 0.0006,
+    "logbase": "/home/logs/",
+    "lr_decay": true,
+    "mkdir": {
+        "_string": "<bound method Parser.mkdir of Parser(prog='plan.py', usage=None, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)>",
+        "_type": "python_object (type = method)",
+        "_value": "gASVWAMAAAAAAACMCGJ1aWx0aW5zlIwHZ2V0YXR0cpSTlIwNc2NyaXB0cy50cmFpbpSMBlBhcnNlcpSTlCmBlH2UKIwIZXhwX25hbWWUjA5ncHQvcHJldHJhaW5lZJSMB25fbGF5ZXKUSwSMCXNhdmVfZGlmZpRoAmgGaAuGlFKUjAVta2RpcpRoAmgGaA6GlFKUjAFOlEtkjApiYXRjaF9zaXpllE0AAYwNbGVhcm5pbmdfcmF0ZZRHP0OpKjBVMmGMCGxyX2RlY2F5lIiMB2xvZ2Jhc2WUjAsvaG9tZS9sb2dzL5SMC2Rpc2NyZXRpemVylIwTUXVhbnRpbGVEaXNjcmV0aXplcpSMCmdldF9jb21taXSUaAJoBmgZhpRSlIwGZGV2aWNllIwEY3VkYZSMGnN1YnNhbXBsZWRfc2VxdWVuY2VfbGVuZ3RolEsKjBN0ZXJtaW5hdGlvbl9wZW5hbHR5lEqc////jAphZGRfZXh0cmFzlGgCaAZoIIaUUpSMBHN0ZXCUSwGMCHNhdmVwYXRolIwzL2hvbWUvbG9ncy93YWxrZXIyZC1tZWRpdW0tZXhwZXJ0LXYyL2dwdC9wcmV0cmFpbmVklIwRZ2VuZXJhdGVfZXhwX25hbWWUaAJoBmgmhpRSlIwIc2V0X3NlZWSUaAJoBmgphpRSlIwMbl9lcG9jaHNfcmVmlEsyjAtyZWFkX2NvbmZpZ5RoAmgGaC2GlFKUjAZjb25maWeUjA5jb25maWcub2ZmbGluZZSMDWFjdGlvbl93ZWlnaHSUSwWMBmNvbW1pdJSMLzg4MzRhNmVkMDRjZWVhYjhmZGI5NDY1ZTE0NWM2ZTA0MWMwNWQ3MWIgbWFzdGVylIwMdmFsdWVfd2VpZ2h0lEsBjAhkaXNjb3VudJRHP++uFHrhR66MBm5fZW1iZJRLIIwGbl9oZWFklEsEjARzZWVklEsqjAphdHRuX3Bkcm9wlEc/uZmZmZmZmowNcmV3YXJkX3dlaWdodJRLAYwHZGF0YXNldJSMGXdhbGtlcjJkLW1lZGl1bS1leHBlcnQtdjKUjAtyZXNpZF9wZHJvcJRHP7mZmZmZmZqMCmVtYmRfcGRyb3CURz+5mZmZmZmajAduX3NhdmVzlEsDdWJoDoaUUpQu"
+    },
+    "n_embd": 32,
+    "n_epochs_ref": 50,
+    "n_head": 4,
+    "n_layer": 4,
+    "n_saves": 3,
+    "read_config": {
+        "_string": "<bound method Parser.read_config of Parser(prog='plan.py', usage=None, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)>",
+        "_type": "python_object (type = method)",
+        "_value": "gASVWAMAAAAAAACMCGJ1aWx0aW5zlIwHZ2V0YXR0cpSTlIwNc2NyaXB0cy50cmFpbpSMBlBhcnNlcpSTlCmBlH2UKIwIZXhwX25hbWWUjA5ncHQvcHJldHJhaW5lZJSMB25fbGF5ZXKUSwSMCXNhdmVfZGlmZpRoAmgGaAuGlFKUjAVta2RpcpRoAmgGaA6GlFKUjAFOlEtkjApiYXRjaF9zaXpllE0AAYwNbGVhcm5pbmdfcmF0ZZRHP0OpKjBVMmGMCGxyX2RlY2F5lIiMB2xvZ2Jhc2WUjAsvaG9tZS9sb2dzL5SMC2Rpc2NyZXRpemVylIwTUXVhbnRpbGVEaXNjcmV0aXplcpSMCmdldF9jb21taXSUaAJoBmgZhpRSlIwGZGV2aWNllIwEY3VkYZSMGnN1YnNhbXBsZWRfc2VxdWVuY2VfbGVuZ3RolEsKjBN0ZXJtaW5hdGlvbl9wZW5hbHR5lEqc////jAphZGRfZXh0cmFzlGgCaAZoIIaUUpSMBHN0ZXCUSwGMCHNhdmVwYXRolIwzL2hvbWUvbG9ncy93YWxrZXIyZC1tZWRpdW0tZXhwZXJ0LXYyL2dwdC9wcmV0cmFpbmVklIwRZ2VuZXJhdGVfZXhwX25hbWWUaAJoBmgmhpRSlIwIc2V0X3NlZWSUaAJoBmgphpRSlIwMbl9lcG9jaHNfcmVmlEsyjAtyZWFkX2NvbmZpZ5RoAmgGaC2GlFKUjAZjb25maWeUjA5jb25maWcub2ZmbGluZZSMDWFjdGlvbl93ZWlnaHSUSwWMBmNvbW1pdJSMLzg4MzRhNmVkMDRjZWVhYjhmZGI5NDY1ZTE0NWM2ZTA0MWMwNWQ3MWIgbWFzdGVylIwMdmFsdWVfd2VpZ2h0lEsBjAhkaXNjb3VudJRHP++uFHrhR66MBm5fZW1iZJRLIIwGbl9oZWFklEsEjARzZWVklEsqjAphdHRuX3Bkcm9wlEc/uZmZmZmZmowNcmV3YXJkX3dlaWdodJRLAYwHZGF0YXNldJSMGXdhbGtlcjJkLW1lZGl1bS1leHBlcnQtdjKUjAtyZXNpZF9wZHJvcJRHP7mZmZmZmZqMCmVtYmRfcGRyb3CURz+5mZmZmZmajAduX3NhdmVzlEsDdWJoLYaUUpQu"
+    },
+    "reproducibility": {
+        "command_line": "python scripts/plan.py --dataset walker2d-medium-expert-v2",
+        "git_has_uncommitted_changes": true,
+        "git_root": "/home",
+        "git_url": "https://github.com/jannerm/trajectory-transformer/tree/8834a6ed04ceeab8fdb9465e145c6e041c05d71b",
+        "time": "Fri Nov  1 04:58:18 2024"
+    },
+    "resid_pdrop": 0.1,
+    "reward_weight": 1,
+    "save_diff": {
+        "_string": "<bound method Parser.save_diff of Parser(prog='plan.py', usage=None, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)>",
+        "_type": "python_object (type = method)",
+        "_value": "gASVWAMAAAAAAACMCGJ1aWx0aW5zlIwHZ2V0YXR0cpSTlIwNc2NyaXB0cy50cmFpbpSMBlBhcnNlcpSTlCmBlH2UKIwIZXhwX25hbWWUjA5ncHQvcHJldHJhaW5lZJSMB25fbGF5ZXKUSwSMCXNhdmVfZGlmZpRoAmgGaAuGlFKUjAVta2RpcpRoAmgGaA6GlFKUjAFOlEtkjApiYXRjaF9zaXpllE0AAYwNbGVhcm5pbmdfcmF0ZZRHP0OpKjBVMmGMCGxyX2RlY2F5lIiMB2xvZ2Jhc2WUjAsvaG9tZS9sb2dzL5SMC2Rpc2NyZXRpemVylIwTUXVhbnRpbGVEaXNjcmV0aXplcpSMCmdldF9jb21taXSUaAJoBmgZhpRSlIwGZGV2aWNllIwEY3VkYZSMGnN1YnNhbXBsZWRfc2VxdWVuY2VfbGVuZ3RolEsKjBN0ZXJtaW5hdGlvbl9wZW5hbHR5lEqc////jAphZGRfZXh0cmFzlGgCaAZoIIaUUpSMBHN0ZXCUSwGMCHNhdmVwYXRolIwzL2hvbWUvbG9ncy93YWxrZXIyZC1tZWRpdW0tZXhwZXJ0LXYyL2dwdC9wcmV0cmFpbmVklIwRZ2VuZXJhdGVfZXhwX25hbWWUaAJoBmgmhpRSlIwIc2V0X3NlZWSUaAJoBmgphpRSlIwMbl9lcG9jaHNfcmVmlEsyjAtyZWFkX2NvbmZpZ5RoAmgGaC2GlFKUjAZjb25maWeUjA5jb25maWcub2ZmbGluZZSMDWFjdGlvbl93ZWlnaHSUSwWMBmNvbW1pdJSMLzg4MzRhNmVkMDRjZWVhYjhmZGI5NDY1ZTE0NWM2ZTA0MWMwNWQ3MWIgbWFzdGVylIwMdmFsdWVfd2VpZ2h0lEsBjAhkaXNjb3VudJRHP++uFHrhR66MBm5fZW1iZJRLIIwGbl9oZWFklEsEjARzZWVklEsqjAphdHRuX3Bkcm9wlEc/uZmZmZmZmowNcmV3YXJkX3dlaWdodJRLAYwHZGF0YXNldJSMGXdhbGtlcjJkLW1lZGl1bS1leHBlcnQtdjKUjAtyZXNpZF9wZHJvcJRHP7mZmZmZmZqMCmVtYmRfcGRyb3CURz+5mZmZmZmajAduX3NhdmVzlEsDdWJoC4aUUpQu"
+    },
+    "savepath": "/home/logs/walker2d-medium-expert-v2/gpt/pretrained",
+    "seed": 42,
+    "set_seed": {
+        "_string": "<bound method Parser.set_seed of Parser(prog='plan.py', usage=None, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)>",
+        "_type": "python_object (type = method)",
+        "_value": "gASVWAMAAAAAAACMCGJ1aWx0aW5zlIwHZ2V0YXR0cpSTlIwNc2NyaXB0cy50cmFpbpSMBlBhcnNlcpSTlCmBlH2UKIwIZXhwX25hbWWUjA5ncHQvcHJldHJhaW5lZJSMB25fbGF5ZXKUSwSMCXNhdmVfZGlmZpRoAmgGaAuGlFKUjAVta2RpcpRoAmgGaA6GlFKUjAFOlEtkjApiYXRjaF9zaXpllE0AAYwNbGVhcm5pbmdfcmF0ZZRHP0OpKjBVMmGMCGxyX2RlY2F5lIiMB2xvZ2Jhc2WUjAsvaG9tZS9sb2dzL5SMC2Rpc2NyZXRpemVylIwTUXVhbnRpbGVEaXNjcmV0aXplcpSMCmdldF9jb21taXSUaAJoBmgZhpRSlIwGZGV2aWNllIwEY3VkYZSMGnN1YnNhbXBsZWRfc2VxdWVuY2VfbGVuZ3RolEsKjBN0ZXJtaW5hdGlvbl9wZW5hbHR5lEqc////jAphZGRfZXh0cmFzlGgCaAZoIIaUUpSMBHN0ZXCUSwGMCHNhdmVwYXRolIwzL2hvbWUvbG9ncy93YWxrZXIyZC1tZWRpdW0tZXhwZXJ0LXYyL2dwdC9wcmV0cmFpbmVklIwRZ2VuZXJhdGVfZXhwX25hbWWUaAJoBmgmhpRSlIwIc2V0X3NlZWSUaAJoBmgphpRSlIwMbl9lcG9jaHNfcmVmlEsyjAtyZWFkX2NvbmZpZ5RoAmgGaC2GlFKUjAZjb25maWeUjA5jb25maWcub2ZmbGluZZSMDWFjdGlvbl93ZWlnaHSUSwWMBmNvbW1pdJSMLzg4MzRhNmVkMDRjZWVhYjhmZGI5NDY1ZTE0NWM2ZTA0MWMwNWQ3MWIgbWFzdGVylIwMdmFsdWVfd2VpZ2h0lEsBjAhkaXNjb3VudJRHP++uFHrhR66MBm5fZW1iZJRLIIwGbl9oZWFklEsEjARzZWVklEsqjAphdHRuX3Bkcm9wlEc/uZmZmZmZmowNcmV3YXJkX3dlaWdodJRLAYwHZGF0YXNldJSMGXdhbGtlcjJkLW1lZGl1bS1leHBlcnQtdjKUjAtyZXNpZF9wZHJvcJRHP7mZmZmZmZqMCmVtYmRfcGRyb3CURz+5mZmZmZmajAduX3NhdmVzlEsDdWJoKYaUUpQu"
+    },
+    "step": 1,
+    "subsampled_sequence_length": 10,
+    "termination_penalty": -100,
+    "value_weight": 1
+}

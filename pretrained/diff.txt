@@ -1,0 +1,324 @@
+diff --git a/azure/Dockerfile b/azure/Dockerfile
+index 5dedb77..bcea003 100644
+--- a/azure/Dockerfile
++++ b/azure/Dockerfile
+@@ -2,7 +2,7 @@
+ # on hosts with GPUs.
+ # The image below is a pinned version of nvidia/cuda:9.1-cudnn7-devel-ubuntu16.04 (from Jan 2018)
+ # If updating the base image, be sure to test on GPU since it has broken in the past.
+-FROM nvidia/cuda:10.1-cudnn7-devel-ubuntu16.04
++FROM nvidia/cuda:11.2.2-cudnn8-devel-ubuntu16.04
+ 
+ SHELL ["/bin/bash", "-c"]
+ 
+diff --git a/config/offline.py b/config/offline.py
+index 1dd7eb6..d16b3f5 100644
+--- a/config/offline.py
++++ b/config/offline.py
+@@ -2,8 +2,8 @@ from trajectory.utils import watch
+ 
+ #------------------------ base ------------------------#
+ 
+-logbase = 'logs/'
+-gpt_expname = 'gpt/azure'
++logbase = '/home/logs/'
++gpt_expname = 'gpt/pretrained'
+ 
+ ## automatically make experiment names for planning
+ ## by labelling folders with these args
+@@ -50,8 +50,8 @@ base = {
+     },
+ 
+     'plan': {
+-        'logbase': logbase,
+-        'gpt_loadpath': gpt_expname,
++        'logbase': '/home/logs/',
++        'gpt_loadpath': 'gpt/pretrained',
+         'gpt_epoch': 'latest',
+         'device': 'cuda',
+         'renderer': 'Renderer',
+diff --git a/environment.yml b/environment.yml
+index 19b5c9d..c6cdae5 100644
+--- a/environment.yml
++++ b/environment.yml
+@@ -9,8 +9,8 @@ dependencies:
+ - pip:
+     - -f https://download.pytorch.org/whl/torch_stable.html
+     - numpy
+-    - gym==0.18.0
+-    - mujoco-py==2.0.2.13
++    - gym
++    - mujoco-py<2.2,>=2.1
+     - matplotlib==3.3.4
+     - torch==1.9.1+cu111
+     - typed-argument-parser
+diff --git a/pretrained.sh b/pretrained.sh
+index 6dd9d95..92c3fda 100755
+--- a/pretrained.sh
++++ b/pretrained.sh
+@@ -1,19 +1,12 @@
+ export DOWNLOAD_PATH=logs
+-
+ [ ! -d ${DOWNLOAD_PATH} ] && mkdir ${DOWNLOAD_PATH}
+ 
+-## downloads pretrained models for 16 datasets:
+-	## {halfcheetah, hopper, walker2d, ant}
+-	## 		x
+-	## {expert-v2, medium-expert-v2, medium-v2, medium-replay-v2}
+-
+ wget https://www.dropbox.com/sh/r09lkdoj66kx43w/AACbXjMhcI6YNsn1qU4LParja?dl=1 -O dropbox_models.zip
+ unzip dropbox_models.zip -d ${DOWNLOAD_PATH}
+ rm dropbox_models.zip
+ 
+-## downloads 15 plans from each pretrained model
+ wget https://www.dropbox.com/s/5sn79ep79yo22kv/pretrained-plans.tar?dl=1 -O dropbox_plans.tar
+ tar -xvf dropbox_plans.tar
+ cp -r pretrained-plans/* ${DOWNLOAD_PATH}
+ rm -r pretrained-plans
+-rm dropbox_plans.tar
++rm dropbox_plans.tar
+\ No newline at end of file
+diff --git a/scripts/plan.py b/scripts/plan.py
+index b66af43..11fdc15 100644
+--- a/scripts/plan.py
++++ b/scripts/plan.py
+@@ -4,15 +4,15 @@ from os.path import join
+ 
+ import trajectory.utils as utils
+ import trajectory.datasets as datasets
++from scripts.train import transition_dim
+ from trajectory.search import (
+-    beam_plan,
+     make_prefix,
+     extract_actions,
+-    update_context,
++    update_context, sample_n
+ )
+ 
+ class Parser(utils.Parser):
+-    dataset: str = 'halfcheetah-medium-expert-v2'
++    dataset: str = 'walker2d-medium-expert-v2'
+     config: str = 'config.offline'
+ 
+ #######################
+@@ -40,11 +40,12 @@ renderer = utils.make_renderer(args)
+ timer = utils.timer.Timer()
+ 
+ discretizer = dataset.discretizer
+-discount = dataset.discount
++# discount = dataset.discount
+ observation_dim = dataset.observation_dim
+ action_dim = dataset.action_dim
++transition_dim = observation_dim + action_dim + 2
+ 
+-value_fn = lambda x: discretizer.value_fn(x, args.percentile)
++# value_fn = lambda x: discretizer.value_fn(x, args.percentile)
+ preprocess_fn = datasets.get_preprocess_fn(env.name)
+ 
+ #######################
+@@ -52,7 +53,7 @@ preprocess_fn = datasets.get_preprocess_fn(env.name)
+ #######################
+ 
+ observation = env.reset()
+-total_reward = 0
++# total_reward = 0
+ 
+ ## observations for rendering
+ rollout = [observation.copy()]
+@@ -61,61 +62,49 @@ rollout = [observation.copy()]
+ context = []
+ 
+ T = env.max_episode_steps
+-for t in range(T):
+ 
+-    observation = preprocess_fn(observation)
++observation = preprocess_fn(observation)
+ 
+-    if t % args.plan_freq == 0:
+-        ## concatenate previous transitions and current observations to input to model
+-        prefix = make_prefix(discretizer, context, observation, args.prefix_context)
++prefix = make_prefix(discretizer, context, observation, args.prefix_context)
++prefix = prefix.to(args.device)
+ 
+-        ## sample sequence from model beginning with `prefix`
+-        sequence = beam_plan(
+-            gpt, value_fn, prefix,
+-            args.horizon, args.beam_width, args.n_expand, observation_dim, action_dim,
+-            discount, args.max_context_transitions, verbose=args.verbose,
+-            k_obs=args.k_obs, k_act=args.k_act, cdf_obs=args.cdf_obs, cdf_act=args.cdf_act,
+-        )
++tokens_per_transition = transition_dim
++N = tokens_per_transition * args.horizon
+ 
+-    else:
+-        sequence = sequence[1:]
++if N % tokens_per_transition != 0:
++    N = (N // tokens_per_transition) * tokens_per_transition
++    print(f"Adjusted N to {N} to be a multiple of tokens_per_transition")
+ 
+-    ## [ horizon x transition_dim ] convert sampled tokens to continuous trajectory
+-    sequence_recon = discretizer.reconstruct(sequence)
++sequence, probs= sample_n(
++            gpt, prefix,N
++        )
+ 
+-    ## [ action_dim ] index into sampled trajectory to grab first action
+-    action = extract_actions(sequence_recon, observation_dim, action_dim, t=0)
++context_length = prefix.shape[1]
+ 
+-    ## execute action in environment
+-    next_observation, reward, terminal, _ = env.step(action)
++generated_tokens = sequence[:, context_length:]
++total_generated_tokens = generated_tokens.shape[1]
+ 
+-    ## update return
+-    total_reward += reward
+-    score = env.get_normalized_score(total_reward)
++if total_generated_tokens != N:
++    print(f"[ERROR] Expected {N} tokens, but got {total_generated_tokens}. Adjusting N.")
++    N = total_generated_tokens
+ 
+-    ## update rollout observations and context transitions
+-    rollout.append(next_observation.copy())
+-    context = update_context(context, discretizer, observation, action, reward, args.max_context_transitions)
++# Ensure total_generated_tokens is divisible by tokens_per_transition
++if total_generated_tokens % tokens_per_transition != 0:
++    raise ValueError(f"Total generated tokens ({total_generated_tokens}) "
++                     f"is not divisible by tokens_per_transition ({tokens_per_transition})")
+ 
+-    print(
+-        f'[ plan ] t: {t} / {T} | r: {reward:.2f} | R: {total_reward:.2f} | score: {score:.4f} | '
+-        f'time: {timer():.2f} | {args.dataset} | {args.exp_name} | {args.suffix}\n'
+-    )
++    ## [ horizon x transition_dim ] convert sampled tokens to continuous trajectory
++# Reshape generated tokens
++sequence = generated_tokens.reshape(-1, tokens_per_transition)
+ 
+-    ## visualization
+-    if t % args.vis_freq == 0 or terminal or t == T:
++# Reconstruct the sequence
++sequence_recon = discretizer.reconstruct(sequence)
+ 
+         ## save current plan
+-        renderer.render_plan(join(args.savepath, f'{t}_plan.mp4'), sequence_recon, env.state_vector())
+-
+-        ## save rollout thus far
+-        renderer.render_rollout(join(args.savepath, f'rollout.mp4'), rollout, fps=80)
+-
+-    if terminal: break
++renderer.render_plan(join(args.savepath, 'plan.mp4'), sequence_recon, env.state_vector())
+ 
+-    observation = next_observation
+ 
+ ## save result as a json file
+ json_path = join(args.savepath, 'rollout.json')
+-json_data = {'score': score, 'step': t, 'return': total_reward, 'term': terminal, 'gpt_epoch': gpt_epoch}
+-json.dump(json_data, open(json_path, 'w'), indent=2, sort_keys=True)
++json_data = {'gpt_epoch': gpt_epoch}
++json.dump(json_data, open(json_path, 'w'), indent=2, sort_keys=True)
+\ No newline at end of file
+diff --git a/test.py b/test.py
+index e69de29..ee25da6 100644
+--- a/test.py
++++ b/test.py
+@@ -0,0 +1,2 @@
++import torch
++print(torch.cuda.is_available())
+\ No newline at end of file
+diff --git a/trajectory/datasets/sequence.py b/trajectory/datasets/sequence.py
+index 18eefff..600a634 100644
+--- a/trajectory/datasets/sequence.py
++++ b/trajectory/datasets/sequence.py
+@@ -33,7 +33,7 @@ def segment(observations, terminals, max_path_length):
+ 
+     ## pad trajectories to be of equal length
+     trajectories_pad = np.zeros((n_trajectories, max_path_length, observation_dim), dtype=trajectories[0].dtype)
+-    early_termination = np.zeros((n_trajectories, max_path_length), dtype=np.bool)
++    early_termination = np.zeros((n_trajectories, max_path_length), dtype=np.bool_)
+     for i, traj in enumerate(trajectories):
+         path_length = path_lengths[i]
+         trajectories_pad[i,:path_length] = traj
+@@ -124,7 +124,7 @@ class SequenceDataset(torch.utils.data.Dataset):
+         ], axis=1)
+         self.termination_flags = np.concatenate([
+             self.termination_flags,
+-            np.ones((n_trajectories, sequence_length-1), dtype=np.bool),
++            np.ones((n_trajectories, sequence_length-1), dtype=np.bool_),
+         ], axis=1)
+ 
+     def __len__(self):
+diff --git a/trajectory/models/transformers.py b/trajectory/models/transformers.py
+index 2c2b0ad..4ab9e90 100644
+--- a/trajectory/models/transformers.py
++++ b/trajectory/models/transformers.py
+@@ -205,6 +205,7 @@ class GPT(nn.Module):
+             idx : [ B x T ]
+             values : [ B x 1 x 1 ]
+         """
++        print(f"[DEBUG] idx size: {idx.size()}")
+         b, t = idx.size()
+         assert t <= self.block_size, "Cannot forward, model block size is exhausted."
+ 
+@@ -252,7 +253,6 @@ class GPT(nn.Module):
+             loss = None
+ 
+         return logits, loss
+-
+ class ConditionalGPT(GPT):
+ 
+     def __init__(self, config):
+diff --git a/trajectory/search/sampling.py b/trajectory/search/sampling.py
+index d5ba66f..89c42f4 100644
+--- a/trajectory/search/sampling.py
++++ b/trajectory/search/sampling.py
+@@ -72,7 +72,11 @@ def forward(model, x, max_block=None, allow_crop=True, crop_increment=None, **kw
+         assert n_crop % crop_increment == 0
+         x = x[:, n_crop:]
+ 
+-    logits, _ = model(x, **kwargs)
++    outputs = model(x, **kwargs)
++    if isinstance(outputs, tuple):
++        logits = outputs[0]
++    else:
++        logits = outputs
+ 
+     return logits
+ 
+@@ -108,6 +112,10 @@ def sample(model, x, temperature=1.0, topk=None, cdf=None, **forward_kwargs):
+ 
+         x : tensor[ batch_size x sequence_length ]
+     '''
++
++    forward_kwargs.pop('targets', None)
++    forward_kwargs.pop('mask', None)
++
+     ## [ batch_size x sequence_length x vocab_size ]
+     logits = forward(model, x, **forward_kwargs)
+ 
+diff --git a/trajectory/utils/discretization.py b/trajectory/utils/discretization.py
+index 9238a72..79b22ce 100644
+--- a/trajectory/utils/discretization.py
++++ b/trajectory/utils/discretization.py
+@@ -103,6 +103,7 @@ class QuantileDiscretizer:
+ 		recon = (left + right) / 2.
+ 		return recon
+ 
++
+ 	#---------------------------- wrappers for planning ----------------------------#
+ 
+ 	def expectation(self, probs, subslice):
+diff --git a/trajectory/utils/serialization.py b/trajectory/utils/serialization.py
+index 13c81ad..d4c4ea3 100644
+--- a/trajectory/utils/serialization.py
++++ b/trajectory/utils/serialization.py
+@@ -35,7 +35,9 @@ def load_model(*loadpath, epoch=None, device='cuda:0'):
+     loadpath = os.path.join(*loadpath)
+     config_path = os.path.join(loadpath, 'model_config.pkl')
+ 
+-    if epoch is 'latest':
++    if epoch == 'latest':
++        epoch = get_latest_epoch(loadpath)
++    if epoch == -1:
+         epoch = get_latest_epoch(loadpath)
+ 
+     print(f'[ utils/serialization ] Loading model epoch: {epoch}')
