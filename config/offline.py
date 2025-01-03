@@ -113,7 +113,7 @@ hopper_medium_replay_v2 = {
 walker2d_medium_expert_v2 = {
     'plan': {
         ## also safe to reduce the horizon here
-        'horizon': 9,
+        'horizon': 5,
     },
 }
 
