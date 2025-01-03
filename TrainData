@@ -1,0 +1,116 @@
+import argparse
+import os
+import numpy as np
+
+from trajectory.datasets import load_environment, qlearning_dataset_with_timeouts
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Merge GPT-generated data with D4RL dataset.")
+    parser.add_argument("--env_name", type=str, default="walker2d-medium-expert-v2",
+                        help="Name of the D4RL environment, walker2d-medium-expert-v2")
+    parser.add_argument("--gpt_file", type=str, required=True,
+                        help="Path to the GPT-generated .npz file (gpt_trajectories.npz)")
+    parser.add_argument("--out_file", type=str, default="merged_dataset.npz",
+                        help="Where to save the merged dataset.")
+    parser.add_argument("--terminate_on_end", action="store_true",
+                        help="Pass terminate_on_end=True to qlearning_dataset_with_timeouts (affects done handling).")
+    return parser.parse_args()
+
+
+def main():
+    args = parse_args()
+
+    # 加载原生 D4RL 数据
+    print(f"[INFO] Loading env & dataset: {args.env_name}")
+    env = load_environment(args.env_name)
+    d4rl_data = env.get_dataset()  # dict with "observations", "actions", "rewards", "terminals", "timeouts", ...
+
+    # 加载 GPT 生成的 .npz
+    print(f"[INFO] Loading GPT data from: {args.gpt_file}")
+    gpt_data = np.load(args.gpt_file)
+    gpt_obs = gpt_data["observations"]             # shape (M, obs_dim)
+    gpt_next_obs = gpt_data["next_observations"]   # shape (M, obs_dim)
+    gpt_actions = gpt_data["actions"]              # shape (M, act_dim)
+    gpt_rewards = gpt_data["rewards"].reshape(-1)  # shape (M,)
+    gpt_terminals = gpt_data["terminals"].reshape(-1)   # shape (M,)
+    gpt_timeouts = gpt_data["timeouts"].reshape(-1)     # shape (M,)
+
+    M = len(gpt_obs)
+    print(f"[INFO] GPT data has {M} transitions.")
+
+    # 合并 D4RL 与 GPT 数据
+    d4rl_obs = d4rl_data["observations"]
+    d4rl_actions = d4rl_data["actions"]
+    d4rl_rewards = d4rl_data["rewards"].reshape(-1)
+    d4rl_terminals = d4rl_data["terminals"].reshape(-1)
+
+    # 如果 D4RL 数据没有 timeouts，就用0填充
+    if "timeouts" in d4rl_data:
+        d4rl_timeouts = d4rl_data["timeouts"].reshape(-1)
+    else:
+        d4rl_timeouts = np.zeros_like(d4rl_terminals)
+
+    if "next_observations" in d4rl_data:
+        d4rl_nextobs = d4rl_data["next_observations"]
+        has_next_obs = True
+    else:
+        d4rl_nextobs = None
+        has_next_obs = False
+
+    # 做拼接
+    merged_observations = np.concatenate([d4rl_obs, gpt_obs], axis=0)           # (N+M, obs_dim)
+    merged_actions = np.concatenate([d4rl_actions, gpt_actions], axis=0)        # (N+M, act_dim)
+    merged_rewards = np.concatenate([d4rl_rewards, gpt_rewards], axis=0)        # (N+M,)
+    merged_terminals = np.concatenate([d4rl_terminals, gpt_terminals], axis=0)  # (N+M,)
+    merged_timeouts = np.concatenate([d4rl_timeouts, gpt_timeouts], axis=0)     # (N+M,)
+
+    if has_next_obs:
+        merged_nextobs = np.concatenate([d4rl_nextobs, gpt_next_obs], axis=0)   # (N+M, obs_dim)
+    else:
+        merged_nextobs = None
+
+    # 组装成新的 dict
+    new_d4rl_data = {
+        "observations": merged_observations,
+        "actions": merged_actions,
+        "rewards": merged_rewards,
+        "terminals": merged_terminals,
+        "timeouts": merged_timeouts,
+    }
+    if merged_nextobs is not None:
+        new_d4rl_data["next_observations"] = merged_nextobs
+
+    # 调用 qlearning_dataset_with_timeouts
+    #    => step-wise (obs, next_obs, action, reward, done)
+    print("[INFO] Passing merged data to qlearning_dataset_with_timeouts...")
+    merged_dict = qlearning_dataset_with_timeouts(
+        env.unwrapped,
+        dataset=new_d4rl_data,
+        terminate_on_end=args.terminate_on_end
+    )
+    # 这里会返回:
+    # {
+    #   'observations': shape (N+M-1, obs_dim),
+    #   'actions': shape (N+M-1, act_dim),
+    #   'next_observations': shape (N+M-1, obs_dim),
+    #   'rewards': shape (N+M-1, 1),
+    #   'terminals': shape (N+M-1, 1),
+    #   'realterminals': shape (N+M-1, 1),
+    # }
+
+    # 保存合并后的数据 -> .npz
+    print(f"[INFO] Saving merged dataset to {args.out_file}")
+    np.savez(
+        args.out_file,
+        observations=merged_dict["observations"],
+        actions=merged_dict["actions"],
+        rewards=merged_dict["rewards"],
+        terminals=merged_dict["terminals"],
+        realterminals=merged_dict["realterminals"],
+        next_observations=merged_dict["next_observations"],
+    )
+    print("[INFO] Done merging GPT data with D4RL!")
+
+
+if __name__ == "__main__":
+    main()
